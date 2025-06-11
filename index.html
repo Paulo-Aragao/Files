@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cartas de Yu-Gi-Oh - Structure e Starter Decks</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #search {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 10px;
+      width: 160px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 4px;
+    }
+
+    .card-name {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .card-code {
+      font-size: 12px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cartas de Structure e Starter Decks</h1>
+  <input type="text" id="search" placeholder="Buscar por nome ou código (ex: BLC1-EN058)">
+
+  <div class="card-grid" id="cardContainer"></div>
+
+  <script>
+    let allCards = [];
+
+    // Carregar JSON com cartas
+    fetch('cards_structure_or_starter.json')
+      .then(response => response.json())
+      .then(data => {
+        allCards = data;
+        renderCards(allCards);
+      });
+
+    // Função para renderizar cartas
+    function renderCards(cards) {
+      const container = document.getElementById('cardContainer');
+      container.innerHTML = '';
+      cards.forEach(card => {
+        const imageUrl = card.card_images?.[0]?.image_url || '';
+        const cardName = card.name;
+        const setCodes = card.card_sets?.map(set => set.set_code).join(', ') || '';
+
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <img src="${imageUrl}" alt="${cardName}">
+          <div class="card-name">${cardName}</div>
+          <div class="card-code">${setCodes}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Filtro ao digitar
+    document.getElementById('search').addEventListener('input', function () {
+      const query = this.value.trim().toLowerCase();
+
+      const filtered = allCards.filter(card => {
+        const nameMatch = card.name?.toLowerCase().includes(query);
+        const codeMatch = (card.card_sets || []).some(set => set.set_code?.toLowerCase().includes(query));
+        return nameMatch || codeMatch;
+      });
+
+      renderCards(filtered);
+    });
+  </script>
+</body>
+</html>
