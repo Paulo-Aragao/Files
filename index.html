@@ -1,108 +1,141 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Cartas de Yu-Gi-Oh - Structure e Starter Decks</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f2f2f2;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    #search {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    .card-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-    }
-
-    .card {
-      background-color: white;
-      border-radius: 8px;
-      padding: 10px;
-      width: 160px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-
-    .card img {
-      width: 100%;
-      border-radius: 4px;
-    }
-
-    .card-name {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .card-code {
-      font-size: 12px;
-      color: #555;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositório de Arquivos JSON</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 2em;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #1a2a45;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5em;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1em;
+            transition: box-shadow 0.2s;
+        }
+        .file-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .file-link {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .file-link:hover {
+            text-decoration: underline;
+        }
+        .copy-btn {
+            padding: 0.5em 1em;
+            border: 1px solid #007bff;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .copy-btn:hover {
+            background-color: #0056b3;
+        }
+        .copy-btn:active {
+             transform: scale(0.98);
+        }
+        .copy-btn.copied {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Cartas de Structure e Starter Decks</h1>
-  <input type="text" id="search" placeholder="Buscar por nome ou código (ex: BLC1-EN058)">
+    <div class="container">
+        <h1>Meu Repositório de Arquivos JSON</h1>
+        <p>
+            Esta página serve como um acessador para os arquivos JSON hospedados neste repositório do GitHub Pages. Use os links abaixo para acessar os dados brutos ou copie a URL para usar em seus projetos.
+        </p>
 
-  <div class="card-grid" id="cardContainer"></div>
+        <ul id="file-list" class="file-list">
+            </ul>
+    </div>
 
-  <script>
-    let allCards = [];
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- IMPORTANTE: ATUALIZE ESTA LISTA QUANDO ADICIONAR NOVOS ARQUIVOS ---
+            const jsonFiles = [
+                'files/cards_structure_or_starter.json',
+                'files/digimon_cards_full.json',
+            ];
+            // --------------------------------------------------------------------
 
-    // Carregar JSON com cartas
-    fetch('cards_structure_or_starter.json')
-      .then(response => response.json())
-      .then(data => {
-        allCards = data;
-        renderCards(allCards);
-      });
+            const fileListContainer = document.getElementById('file-list');
+            
+            // Pega o nome do repositório a partir da URL da página
+            const pathSegments = window.location.pathname.split('/').filter(v => v);
+            const repoName = pathSegments[0] || 'Files'; // Se não encontrar, assume 'Files'
 
-    // Função para renderizar cartas
-    function renderCards(cards) {
-      const container = document.getElementById('cardContainer');
-      container.innerHTML = '';
-      cards.forEach(card => {
-        const imageUrl = card.card_images?.[0]?.image_url || '';
-        const cardName = card.name;
-        const setCodes = card.card_sets?.map(set => set.set_code).join(', ') || '';
+            const baseUrl = `${window.location.origin}/${repoName}/`;
 
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
-          <img src="${imageUrl}" alt="${cardName}">
-          <div class="card-name">${cardName}</div>
-          <div class="card-code">${setCodes}</div>
-        `;
-        container.appendChild(div);
-      });
-    }
+            jsonFiles.forEach(filePath => {
+                const fullUrl = baseUrl + filePath;
 
-    // Filtro ao digitar
-    document.getElementById('search').addEventListener('input', function () {
-      const query = this.value.trim().toLowerCase();
+                const listItem = document.createElement('li');
+                listItem.className = 'file-item';
 
-      const filtered = allCards.filter(card => {
-        const nameMatch = card.name?.toLowerCase().includes(query);
-        const codeMatch = (card.card_sets || []).some(set => set.set_code?.toLowerCase().includes(query));
-        return nameMatch || codeMatch;
-      });
+                const link = document.createElement('a');
+                link.href = fullUrl;
+                link.textContent = filePath;
+                link.className = 'file-link';
+                link.target = '_blank'; // Abre em nova aba
 
-      renderCards(filtered);
-    });
-  </script>
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copiar URL';
+                copyButton.className = 'copy-btn';
+                copyButton.onclick = () => {
+                    navigator.clipboard.writeText(fullUrl).then(() => {
+                        copyButton.textContent = 'Copiado!';
+                        copyButton.classList.add('copied');
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copiar URL';
+                            copyButton.classList.remove('copied');
+                        }, 2000); // Volta ao normal depois de 2 segundos
+                    });
+                };
+
+                listItem.appendChild(link);
+                listItem.appendChild(copyButton);
+                fileListContainer.appendChild(listItem);
+            });
+        });
+    </script>
+
 </body>
 </html>
